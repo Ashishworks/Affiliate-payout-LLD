@@ -1,0 +1,16 @@
+{
+  "name": "payout-management-system",
+  "version": "1.0.0",
+  "description": "Low-Level Design for a User Payout Management System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "system-design",
+    "lld",
+    "payouts"
+  ],
+  "author": "Ashish",
+  "license": "ISC"
+}
