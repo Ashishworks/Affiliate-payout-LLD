@@ -23,17 +23,25 @@ console.log(`User's balance after advance payouts: ₹${DB.users[userId].withdra
 
 // 3. Admin Reconciliation
 console.log("3. Reconciling Sales (1 Rejected, 2 Approved)...");
+
+// Capture balance before reconciliation to calculate the exact payout of this batch
+const preReconciliationBalance = DB.users[userId].withdrawable_balance;
+
 PayoutService.reconcileSale(sale1.id, 'rejected');
 PayoutService.reconcileSale(sale2.id, 'approved');
 PayoutService.reconcileSale(sale3.id, 'approved');
 
+const postReconciliationBalance = DB.users[userId].withdrawable_balance;
+const finalPayoutBatch = postReconciliationBalance - preReconciliationBalance;
+
 // 4. Final Calculation Check
 console.log("=== Final Ledger ===");
-console.log(`Final Withdrawable Balance for ${userId}: ₹${DB.users[userId].withdrawable_balance}`);
-console.log("Expected Output according to assignment: ₹68");
+console.log(`Final Payout generated from reconciliation: ₹${finalPayoutBatch}`);
+console.log(`Total Wallet Balance for ${userId}: ₹${postReconciliationBalance} (₹12 Advance + ₹68 Final Payout)`);
+console.log("Expected Final Payout according to assignment: ₹68");
 
-if (DB.users[userId].withdrawable_balance === 68) {
-    console.log("✅ SUCCESS: The calculated balance matches the expected output!\n");
+if (finalPayoutBatch === 68 && postReconciliationBalance === 80) {
+    console.log("✅ SUCCESS: The calculated payouts match the expected output!\n");
 } else {
     console.log("❌ FAILURE: The calculated balance is incorrect.\n");
 }
@@ -41,8 +49,8 @@ if (DB.users[userId].withdrawable_balance === 68) {
 // 5. Simulate Withdrawal and Failure Recovery
 console.log("5. Testing Withdrawal Rules...");
 try {
-    console.log("Attempting to withdraw ₹68...");
-    const txn = UserService.requestWithdrawal(userId, 68);
+    console.log("Attempting to withdraw total balance of ₹80...");
+    const txn = UserService.requestWithdrawal(userId, 80);
     console.log(`Withdrawal successful. Transaction ID: ${txn.id}`);
     console.log(`Balance after withdrawal: ₹${DB.users[userId].withdrawable_balance}`);
     
